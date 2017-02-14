@@ -28,6 +28,7 @@ import org.ros.android.BitmapFromCompressedImage;
 import org.ros.android.view.RosImageView;
 import org.ros.android.view.VirtualJoystickView;
 import org.ros.namespace.NameResolver;
+import org.ros.node.ConnectedNode;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
@@ -39,6 +40,7 @@ import java.io.IOException;
 public class MainActivity extends RosAppActivity {
 	private RosImageView<sensor_msgs.CompressedImage> cameraView;
 	private VirtualJoystickView virtualJoystickView;
+	private Messenger messenger;
 	private Button backButton;
 
 	public MainActivity() {
@@ -56,6 +58,9 @@ public class MainActivity extends RosAppActivity {
 
         cameraView = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.image);
         cameraView.setMessageType(sensor_msgs.CompressedImage._TYPE);
+
+		System.out.println(sensor_msgs.CompressedImage._TYPE);
+
         cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
         virtualJoystickView = (VirtualJoystickView) findViewById(R.id.virtual_joystick);
         backButton = (Button) findViewById(R.id.back_button);
@@ -94,6 +99,7 @@ public class MainActivity extends RosAppActivity {
 		nodeMainExecutor.execute(virtualJoystickView,
 				nodeConfiguration.setNodeName("android/virtual_joystick"));
         } catch (IOException e) {
+			e.printStackTrace();
             // Socket problem
         }
 
