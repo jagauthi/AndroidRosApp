@@ -20,6 +20,7 @@ public class Messenger extends RelativeLayout implements MessageListener<Odometr
     private Publisher<std_msgs.String> publisher;
     private Timer publisherTimer;
     private String topicName;
+    boolean sending = false;
 
     public Messenger(Context context) {
         super(context);
@@ -50,25 +51,32 @@ public class Messenger extends RelativeLayout implements MessageListener<Odometr
     }
 
     public void onStart(ConnectedNode connectedNode) {
-        Log.d("MyTaggg", "aahhhh");
-
         this.publisher = connectedNode.newPublisher(this.topicName, "std_msgs/String");
-
-        //std_msgs.String str = publisher.newMessage();
-        //str.setData("TestMessage");
-        //publisher.publish(str);
+        Subscriber subscriber = connectedNode.newSubscriber(this.topicName, "std_msgs/String");
+        subscriber.addMessageListener(new MessageListener() {
+            @Override
+            public void onNewMessage(Object o) {
+                Log.d("DebuggingTag", "Getting a message");
+            }
+        });
 
         this.publisherTimer = new Timer();
         this.publisherTimer.schedule(new TimerTask() {
             public void run() {
-                if(true) {
-                    Log.d("MyTaggg", "lol");
+                if(sending) {
+                    Log.d("DebuggingTag", publisher.getTopicName().toString());
                     std_msgs.String str = publisher.newMessage();
-                    str.setData("asdf");
+                    str.setData("Test Message");
                     publisher.publish(str);
+                    sending = false;
+                    Log.d("DebuggingTag", "NumSubscribers: "+publisher.getNumberOfSubscribers());
                 }
             }
         }, 0L, 80L);
+    }
+
+    public void setSending(boolean val) {
+        sending = val;
     }
 
     public void onShutdown(Node node) {

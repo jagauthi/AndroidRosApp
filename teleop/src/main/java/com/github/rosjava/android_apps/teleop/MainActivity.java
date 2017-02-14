@@ -58,12 +58,12 @@ public class MainActivity extends RosAppActivity {
 		setMainWindowResource(R.layout.main);
 		super.onCreate(savedInstanceState);
 
-        cameraView = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.image);
-        cameraView.setMessageType(sensor_msgs.CompressedImage._TYPE);
+        //cameraView = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.image);
+        //cameraView.setMessageType(sensor_msgs.CompressedImage._TYPE);
 
-		System.out.println(sensor_msgs.CompressedImage._TYPE);
+		//System.out.println(sensor_msgs.CompressedImage._TYPE);
 
-        cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
+       // cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
         virtualJoystickView = (VirtualJoystickView) findViewById(R.id.virtual_joystick);
 
 		messenger = new Messenger(virtualJoystickView.getContext());
@@ -87,7 +87,7 @@ public class MainActivity extends RosAppActivity {
 
 	public void sendMessage()
 	{
-
+        messenger.setSending(true);
 	}
 
 	@Override
@@ -109,14 +109,11 @@ public class MainActivity extends RosAppActivity {
 			joyTopic = appNameSpace.resolve(joyTopic).toString();
 			camTopic = appNameSpace.resolve(camTopic).toString();
 
-			cameraView.setTopicName(camTopic);
+			//cameraView.setTopicName(camTopic);
 			virtualJoystickView.setTopicName(joyTopic);
-
 			nodeMainExecutor.execute(messenger, nodeConfiguration
 					.setNodeName("android/messenger"));
 
-			nodeMainExecutor.execute(cameraView, nodeConfiguration
-					.setNodeName("android/camera_view"));
 			nodeMainExecutor.execute(virtualJoystickView,
 					nodeConfiguration.setNodeName("android/virtual_joystick"));
 

@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="50dip"
         android:background="#ff404040"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
         <Button
             android:id="@+id/back_button"
@@ -19,12 +19,6 @@
             android:onClick="back"
             android:text="Back" />
 
-        <Button
-            android:id="@+id/messenger_button"
-            android:layout_width="wrap_content"
-            android:layout_height="50dip"
-            android:onClick="asdf"
-            android:text="Back" />
 
         <LinearLayout
             android:id="@+id/top_bar"
@@ -39,14 +33,7 @@
         android:id="@+id/main_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="horizontal" >
-
-        <org.ros.android.view.RosImageView
-            android:id="@+id/image"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"
-            android:src="@mipmap/icon" />
+        android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/side_layout"
@@ -55,13 +42,35 @@
             android:layout_weight="1"
             android:orientation="vertical" >
 
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/messenger_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dip"
+                    android:text="Enter text" />
+
+                <Button
+                    android:id="@+id/messenger_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dip"
+                    android:onClick="asdf"
+                    android:text="Send!"
+                    android:layout_toRightOf="@+id/messenger_text" />
+            </RelativeLayout>
+
             <org.ros.android.view.VirtualJoystickView
                 android:id="@+id/virtual_joystick"
                 android:layout_width="wrap_content"
                 android:layout_height="0dip"
                 android:layout_gravity="center"
                 android:layout_weight="4"
-                android:adjustViewBounds="true" />
+                android:adjustViewBounds="true" >
+
+
+            </org.ros.android.view.VirtualJoystickView>
 
             <View
                 android:layout_width="0dip"
