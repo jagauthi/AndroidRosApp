@@ -1,6 +1,7 @@
 package com.github.rosjava.android_apps.teleop;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 import geometry_msgs.Twist;
@@ -16,14 +17,13 @@ import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 
 public class Messenger extends RelativeLayout implements MessageListener<Odometry>, NodeMain {
-    private Publisher<Twist> publisher;
+    private Publisher<std_msgs.String> publisher;
     private Timer publisherTimer;
-    private Twist currentVelocityCommand;
     private String topicName;
 
     public Messenger(Context context) {
         super(context);
-        this.topicName = "appMessenges";
+        this.topicName = "appMessages";
     }
 
     public void onNewMessage(Odometry message) {
@@ -50,15 +50,22 @@ public class Messenger extends RelativeLayout implements MessageListener<Odometr
     }
 
     public void onStart(ConnectedNode connectedNode) {
-        this.publisher = connectedNode.newPublisher(this.topicName, "geometry_msgs/Twist");
-        this.currentVelocityCommand = (Twist)this.publisher.newMessage();
-        Subscriber subscriber = connectedNode.newSubscriber("odom", "nav_msgs/Odometry");
-        subscriber.addMessageListener(this);
+        Log.d("MyTaggg", "aahhhh");
+
+        this.publisher = connectedNode.newPublisher(this.topicName, "std_msgs/String");
+
+        //std_msgs.String str = publisher.newMessage();
+        //str.setData("TestMessage");
+        //publisher.publish(str);
+
         this.publisherTimer = new Timer();
         this.publisherTimer.schedule(new TimerTask() {
             public void run() {
                 if(true) {
-                    publisher.publish(currentVelocityCommand);
+                    Log.d("MyTaggg", "lol");
+                    std_msgs.String str = publisher.newMessage();
+                    str.setData("asdf");
+                    publisher.publish(str);
                 }
             }
         }, 0L, 80L);

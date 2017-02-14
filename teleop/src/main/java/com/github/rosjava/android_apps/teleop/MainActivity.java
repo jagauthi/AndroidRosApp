@@ -17,6 +17,7 @@
 package com.github.rosjava.android_apps.teleop;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,7 +41,9 @@ import java.io.IOException;
 public class MainActivity extends RosAppActivity {
 	private RosImageView<sensor_msgs.CompressedImage> cameraView;
 	private VirtualJoystickView virtualJoystickView;
+
 	private Messenger messenger;
+	private Button messengerButton;
 	private Button backButton;
 
 	public MainActivity() {
@@ -51,7 +54,6 @@ public class MainActivity extends RosAppActivity {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		setDashboardResource(R.id.top_bar);
 		setMainWindowResource(R.layout.main);
 		super.onCreate(savedInstanceState);
@@ -63,6 +65,17 @@ public class MainActivity extends RosAppActivity {
 
         cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
         virtualJoystickView = (VirtualJoystickView) findViewById(R.id.virtual_joystick);
+
+		messenger = new Messenger(virtualJoystickView.getContext());
+
+		messengerButton = (Button)findViewById(R.id.messenger_button);
+		messengerButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				sendMessage();
+			}
+		});
+
         backButton = (Button) findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +83,11 @@ public class MainActivity extends RosAppActivity {
                 onBackPressed();
             }
         });
+	}
+
+	public void sendMessage()
+	{
+
 	}
 
 	@Override
@@ -84,25 +102,29 @@ public class MainActivity extends RosAppActivity {
             NodeConfiguration nodeConfiguration =
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
-        String joyTopic = remaps.get(getString(R.string.joystick_topic));
-        String camTopic = remaps.get(getString(R.string.camera_topic));
+			String joyTopic = remaps.get(getString(R.string.joystick_topic));
+			String camTopic = remaps.get(getString(R.string.camera_topic));
 
-        NameResolver appNameSpace = getMasterNameSpace();
-        joyTopic = appNameSpace.resolve(joyTopic).toString();
-        camTopic = appNameSpace.resolve(camTopic).toString();
+			NameResolver appNameSpace = getMasterNameSpace();
+			joyTopic = appNameSpace.resolve(joyTopic).toString();
+			camTopic = appNameSpace.resolve(camTopic).toString();
 
-		cameraView.setTopicName(camTopic);
-        virtualJoystickView.setTopicName(joyTopic);
-		
-		nodeMainExecutor.execute(cameraView, nodeConfiguration
-				.setNodeName("android/camera_view"));
-		nodeMainExecutor.execute(virtualJoystickView,
-				nodeConfiguration.setNodeName("android/virtual_joystick"));
-        } catch (IOException e) {
-			e.printStackTrace();
-            // Socket problem
-        }
+			cameraView.setTopicName(camTopic);
+			virtualJoystickView.setTopicName(joyTopic);
 
+			nodeMainExecutor.execute(messenger, nodeConfiguration
+					.setNodeName("android/messenger"));
+
+			nodeMainExecutor.execute(cameraView, nodeConfiguration
+					.setNodeName("android/camera_view"));
+			nodeMainExecutor.execute(virtualJoystickView,
+					nodeConfiguration.setNodeName("android/virtual_joystick"));
+
+			} catch (IOException e) {
+				Log.d("tag", "Oh nooooooo");
+				e.printStackTrace();
+				// Socket problem
+			}
 	}
 	
 	  @Override

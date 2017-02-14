@@ -19,6 +19,13 @@
             android:onClick="back"
             android:text="Back" />
 
+        <Button
+            android:id="@+id/messenger_button"
+            android:layout_width="wrap_content"
+            android:layout_height="50dip"
+            android:onClick="asdf"
+            android:text="Back" />
+
         <LinearLayout
             android:id="@+id/top_bar"
             android:layout_width="fill_parent"
@@ -47,11 +54,6 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:orientation="vertical" >
-
-            <View
-                android:layout_width="0dip"
-                android:layout_height="0dip"
-                android:layout_weight="1" />
 
             <org.ros.android.view.VirtualJoystickView
                 android:id="@+id/virtual_joystick"
