@@ -19,7 +19,6 @@
             android:onClick="back"
             android:text="Back" />
 
-
         <LinearLayout
             android:id="@+id/top_bar"
             android:layout_width="fill_parent"
@@ -48,9 +47,9 @@
 
                 <EditText
                     android:id="@+id/messenger_text"
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dip"
                     android:layout_height="50dip"
-                    android:text="Enter text" />
+                    android:hint="Enter text" />
 
                 <Button
                     android:id="@+id/messenger_button"
@@ -59,6 +58,14 @@
                     android:onClick="asdf"
                     android:text="Send!"
                     android:layout_toRightOf="@+id/messenger_text" />
+
+                <Button
+                    android:id="@+id/listener_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dip"
+                    android:onClick="asdf"
+                    android:text="Start Listener"
+                    android:layout_below="@+id/messenger_text" />
             </RelativeLayout>
 
             <org.ros.android.view.VirtualJoystickView

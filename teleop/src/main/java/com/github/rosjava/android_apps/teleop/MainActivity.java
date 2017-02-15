@@ -25,11 +25,8 @@ import android.widget.Button;
 
 import com.github.rosjava.android_remocons.common_tools.apps.RosAppActivity;
 
-import org.ros.android.BitmapFromCompressedImage;
-import org.ros.android.view.RosImageView;
 import org.ros.android.view.VirtualJoystickView;
 import org.ros.namespace.NameResolver;
-import org.ros.node.ConnectedNode;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
@@ -39,15 +36,15 @@ import java.io.IOException;
  * @author murase@jsk.imi.i.u-tokyo.ac.jp (Kazuto Murase)
  */
 public class MainActivity extends RosAppActivity {
-	private RosImageView<sensor_msgs.CompressedImage> cameraView;
 	private VirtualJoystickView virtualJoystickView;
 
 	private Messenger messenger;
+	private Listener listener;
+
 	private Button messengerButton;
 	private Button backButton;
 
 	public MainActivity() {
-		// The RosActivity constructor configures the notification title and ticker messages.
 		super("android teleop", "android teleop");
 	}
 
@@ -58,15 +55,10 @@ public class MainActivity extends RosAppActivity {
 		setMainWindowResource(R.layout.main);
 		super.onCreate(savedInstanceState);
 
-        //cameraView = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.image);
-        //cameraView.setMessageType(sensor_msgs.CompressedImage._TYPE);
-
-		//System.out.println(sensor_msgs.CompressedImage._TYPE);
-
-       // cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
         virtualJoystickView = (VirtualJoystickView) findViewById(R.id.virtual_joystick);
 
 		messenger = new Messenger(virtualJoystickView.getContext());
+		listener = new Listener(messenger.getContext());
 
 		messengerButton = (Button)findViewById(R.id.messenger_button);
 		messengerButton.setOnClickListener(new View.OnClickListener() {
@@ -99,35 +91,27 @@ public class MainActivity extends RosAppActivity {
             java.net.Socket socket = new java.net.Socket(getMasterUri().getHost(), getMasterUri().getPort());
             java.net.InetAddress local_network_address = socket.getLocalAddress();
             socket.close();
-            NodeConfiguration nodeConfiguration =
-                    NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
+            NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
 			String joyTopic = remaps.get(getString(R.string.joystick_topic));
-			String camTopic = remaps.get(getString(R.string.camera_topic));
 
 			NameResolver appNameSpace = getMasterNameSpace();
 			joyTopic = appNameSpace.resolve(joyTopic).toString();
-			camTopic = appNameSpace.resolve(camTopic).toString();
-
-			//cameraView.setTopicName(camTopic);
 			virtualJoystickView.setTopicName(joyTopic);
-			nodeMainExecutor.execute(messenger, nodeConfiguration
-					.setNodeName("android/messenger"));
 
-			nodeMainExecutor.execute(virtualJoystickView,
-					nodeConfiguration.setNodeName("android/virtual_joystick"));
-
-			} catch (IOException e) {
+			nodeMainExecutor.execute(messenger, nodeConfiguration.setNodeName("android/messenger"));
+			nodeMainExecutor.execute(listener, nodeConfiguration.setNodeName("android/listener"));
+			nodeMainExecutor.execute(virtualJoystickView, nodeConfiguration.setNodeName("android/virtual_joystick"));
+		}
+		catch (IOException e) {
 				Log.d("tag", "Oh nooooooo");
 				e.printStackTrace();
-				// Socket problem
-			}
+		}
 	}
 	
 	  @Override
 	  public boolean onCreateOptionsMenu(Menu menu){
 		  menu.add(0,0,0,R.string.stop_app);
-
 		  return super.onCreateOptionsMenu(menu);
 	  }
 	  
@@ -135,9 +119,9 @@ public class MainActivity extends RosAppActivity {
 	  public boolean onOptionsItemSelected(MenuItem item){
 		  super.onOptionsItemSelected(item);
 		  switch (item.getItemId()){
-		  case 0:
-			  onDestroy();
-			  break;
+			  case 0:
+				  onDestroy();
+				  break;
 		  }
 		  return true;
 	  }
